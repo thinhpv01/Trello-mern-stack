@@ -16,10 +16,19 @@ export const initialData = {
             "card-5",
             "card-6",
             "card-7",
+            "card-8",
           ],
           cards: [
             {
               id: "card-1",
+              boardId: "board-1",
+              columnId: "column-1",
+              title: "Title of card 1",
+              cover:
+                "https://i.pinimg.com/564x/ca/32/8b/ca328b7ccab4304ffe0f908ea7453207.jpg",
+            },
+            {
+              id: "card-8",
               boardId: "board-1",
               columnId: "column-1",
               title: "Title of card 1",
