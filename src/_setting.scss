@@ -1,11 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,900;1,700");
 
 $gap: 10px;
+$column-border-radius: 8px;
 $navbar-app-height: 5vh;
 $navbar-board-height: 6vh;
 $board-content-height: 88vh;
 
 //colors
+$app-main-text-color: #333;
 $board-bg-color: #0079bf;
 $common-element-bg: rgba(255, 255, 255, 0.24);
 

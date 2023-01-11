@@ -1,21 +1,18 @@
 import Card from "components/Card/Card";
-import React from "react";
+import { BiPlus } from "react-icons/bi";
 import { Container, Draggable } from "react-smooth-dnd";
 import { mapOrder } from "utilities/sorts";
 import "./Column.scss";
-const Column = ({ column }) => {
+const Column = ({ column, onCardDrop }) => {
   const cards = mapOrder(column.cards, column.cardOrder, "id");
 
-  const onCardDrop = (dropResult) => {
-    console.log(dropResult);
-  };
   return (
     <div className="column">
       <header className="column-drag-handle">{column.title}</header>
       <div className="card-list">
         <Container
           groupName="col"
-          onDrop={onCardDrop}
+          onDrop={(dropResult) => onCardDrop(column.id, dropResult)}
           getChildPayload={(index) => cards[index]}
           dragClass="card-ghost"
           dropClass="card-ghost-drop"
@@ -33,7 +30,12 @@ const Column = ({ column }) => {
           ))}
         </Container>
       </div>
-      <footer>Add another card</footer>
+      <footer>
+        <div className="footer-actions">
+          <BiPlus />
+          Add another card
+        </div>
+      </footer>
     </div>
   );
 };
