@@ -32,8 +32,23 @@
     font-size: 15px;
     background-color: hsla(0, 0%, 100%, 0.24);
     border-radius: $column-border-radius;
-    &:hover{
-      background-color: hsla(0, 0%, 100%, .34)
+    &:hover {
+      background-color: hsla(0, 0%, 100%, 0.34);
     }
+  }
+  .enter-new-column {
+    width: 250px;
+    max-width: 250px;
+    background-color: $column-bg-color;
+    line-height: 32px;
+    padding: 4px 10px;
+    margin-left: 2 * $gap;
+    border-radius: $column-border-radius;
+  }
+  .cancel-new-column {
+    margin-left: $gap;
+    cursor: pointer;
+    font-size: 24px;
+    color: $alert-danger;
   }
 }
