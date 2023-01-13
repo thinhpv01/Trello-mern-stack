@@ -44,6 +44,12 @@
     padding: 4px 10px;
     margin-left: 2 * $gap;
     border-radius: $column-border-radius;
+    input.input-enter-new-column{
+      margin: 5px 0;
+      &:focus{
+        border-color: $input-border-color;
+      }
+    }
   }
   .cancel-new-column {
     margin-left: $gap;
