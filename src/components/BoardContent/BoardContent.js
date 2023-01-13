@@ -18,9 +18,13 @@ import "./BoardContent.scss";
 const BoardContent = () => {
   const [board, setBoard] = useState({});
   const [columns, setColumns] = useState([]);
-  const [openNewColumnForm, setOpenNewColumnForm] = useState(false);
   const [newColumnTitle, setNewColumnTitle] = useState("");
   const newColumnInputRef = useRef(null);
+
+  const [openNewColumnForm, setOpenNewColumnForm] = useState(false);
+  const toggleOpenNewColumnForm = () => {
+    setOpenNewColumnForm(!openNewColumnForm);
+  };
 
   useEffect(() => {
     const boardFromDB = initialData.boards.find(
@@ -63,13 +67,11 @@ const BoardContent = () => {
     }
   };
 
-  const toggleOpenNewColumnForm = () => {
-    setOpenNewColumnForm(!openNewColumnForm);
-  };
   const onNewColumnTitleChange = (e) => setNewColumnTitle(e.target.value);
 
   const addNewColumn = () => {
     if (!newColumnTitle) {
+      newColumnInputRef.current.focus();
       return;
     }
     const newColumnToAdd = {
@@ -79,7 +81,6 @@ const BoardContent = () => {
       cardOrder: [],
       cards: [],
     };
-    console.log(newColumnToAdd);
     let newColumns = [...columns, newColumnToAdd];
     let newBoard = { ...board };
     newBoard.columnOrder = newColumns.map((c) => c.id);
@@ -149,7 +150,7 @@ const BoardContent = () => {
                 Add Column
               </Button>
               <BiX
-                className="cancel-new-column"
+                className="cancel-icon"
                 onClick={() => setOpenNewColumnForm(false)}
               />
             </Col>

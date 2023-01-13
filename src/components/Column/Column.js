@@ -1,8 +1,9 @@
 import Card from "components/Card/Card";
 import ConfirmModal from "components/Common/ConfirmModal";
-import { useLayoutEffect, useState } from "react";
-import { Dropdown, Form } from "react-bootstrap";
-import { BiPlus } from "react-icons/bi";
+import { cloneDeep } from "lodash";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Button, Dropdown, Form } from "react-bootstrap";
+import { BiPlus, BiX } from "react-icons/bi";
 import { Container, Draggable } from "react-smooth-dnd";
 import { MODAL_ACTION_CONFIRM } from "utilities/constants";
 import {
@@ -15,6 +16,11 @@ const Column = ({ column, onCardDrop, onUpdateColumn }) => {
   const cards = mapOrder(column.cards, column.cardOrder, "id");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const toggleShowConfirmModal = () => setShowConfirmModal(!showConfirmModal);
+  const [columnTitle, setColumnTitle] = useState("");
+  const [openNewCardForm, setOpenNewCardForm] = useState(false);
+  const [newCardTitle, setNewCardTitle] = useState("");
+  const newCardTextAreaRef = useRef(null);
+
   const onConfirmModalAction = (type) => {
     console.log(type);
     if (type === MODAL_ACTION_CONFIRM) {
@@ -27,11 +33,18 @@ const Column = ({ column, onCardDrop, onUpdateColumn }) => {
     setShowConfirmModal(false);
   };
   const handleColumnTitleChange = (e) => setColumnTitle(e.target.value);
-
-  const [columnTitle, setColumnTitle] = useState("");
+  const toggleOpenNewCardForm = () => {
+    setOpenNewCardForm(!openNewCardForm);
+  };
   useLayoutEffect(() => {
     setColumnTitle(column.title);
   }, [column.title]);
+  useEffect(() => {
+    if (newCardTextAreaRef && newCardTextAreaRef.current) {
+      newCardTextAreaRef.current.focus();
+      newCardTextAreaRef.current.select();
+    }
+  }, [openNewCardForm]);
   const handleColumnBlur = () => {
     const newColumn = {
       ...column,
@@ -39,7 +52,26 @@ const Column = ({ column, onCardDrop, onUpdateColumn }) => {
     };
     onUpdateColumn(newColumn);
   };
-
+  const onNewCardTitleChange = (e) => setNewCardTitle(e.target.value);
+  const addNewCard = () => {
+    if (!newCardTitle) {
+      newCardTextAreaRef.current.focus();
+      return;
+    }
+    const newCardToAdd = {
+      id: Math.random().toString(36),
+      boardId: column.boardId,
+      columnId: column.id,
+      title: newCardTitle.trim(),
+      cover: null,
+    };
+    let newColumn = cloneDeep(column);
+    newColumn.cards.push(newCardToAdd);
+    newColumn.cardOrder.push(newCardToAdd.id);
+    onUpdateColumn(newColumn);
+    setNewCardTitle("");
+    toggleOpenNewCardForm();
+  };
   return (
     <div className="column">
       <header className="column-drag-handle">
@@ -65,7 +97,7 @@ const Column = ({ column, onCardDrop, onUpdateColumn }) => {
               className="dropdown-btn"
             />
             <Dropdown.Menu>
-              <Dropdown.Item>Add card</Dropdown.Item>
+              <Dropdown.Item onClick={() => {}}>Add card</Dropdown.Item>
               <Dropdown.Item onClick={toggleShowConfirmModal}>
                 Remove Column
               </Dropdown.Item>
@@ -95,12 +127,33 @@ const Column = ({ column, onCardDrop, onUpdateColumn }) => {
             </Draggable>
           ))}
         </Container>
+        {openNewCardForm && (
+          <div className="add-new-card-area">
+            <Form.Control
+              size="sm"
+              as="textarea"
+              rows={3}
+              placeholder="Enter a title for dis card..."
+              className="textarea-enter-new-card"
+              ref={newCardTextAreaRef}
+              onChange={onNewCardTitleChange}
+              value={newCardTitle}
+              onKeyDown={(e) => e.key === "Enter" && addNewCard()}
+            />
+            <Button variant="success" size="sm" onClick={addNewCard}>
+              Add New Card
+            </Button>
+            <BiX className="cancel-icon" onClick={toggleOpenNewCardForm} />
+          </div>
+        )}
       </div>
       <footer>
-        <div className="footer-actions">
-          <BiPlus />
-          Add another card
-        </div>
+        {!openNewCardForm && (
+          <div className="footer-actions" onClick={toggleOpenNewCardForm}>
+            <BiPlus />
+            Add another card
+          </div>
+        )}
       </footer>
       <ConfirmModal
         show={showConfirmModal}

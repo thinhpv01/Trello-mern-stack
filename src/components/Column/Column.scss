@@ -104,16 +104,13 @@ $column-height: calc(#{$board-content-height} - #{$gap * 2});
       border: 1px dashed #abc;
       margin: 5px;
     }
-  }
-  .column-title-editable {
-    background-color: inherit;
-    border: none;
-    font-size: inherit;
-    font-weight: inherit;
-    cursor: pointer;
-    &:focus {
-      background-color: white;
-      border: 1px solid $input-border-color;
+    .add-new-card-area{
+      .textarea-enter-new-card{
+        min-height: 54px;
+        max-height: 162px;
+        margin-bottom: $gap;
+      }
     }
   }
+  
 }

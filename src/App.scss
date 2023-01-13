@@ -33,5 +33,24 @@ body {
   [type=tel].form-control:focus, 
   [contenteditable].form-control:focus {
     box-shadow: none;
+    border: 1px solid $input-border-color;
+  }
+
+  .column-title-editable {
+    background-color: inherit;
+    border: none;
+    font-size: inherit;
+    font-weight: inherit;
+    cursor: pointer;
+    &:focus {
+      background-color: white;
+    }
+  }
+
+  .cancel-icon {
+    margin-left: $gap;
+    cursor: pointer;
+    font-size: 24px;
+    color: $alert-danger;
   }
 }
