@@ -1,4 +1,4 @@
-import { fetchBoardDetails } from "actions/apiCall";
+import { createNewColumn, fetchBoardDetails } from "actions/apiCall";
 import Column from "components/Column/Column";
 import { isEmpty } from "lodash";
 import { useEffect, useRef, useState } from "react";
@@ -73,31 +73,29 @@ const BoardContent = () => {
       return;
     }
     const newColumnToAdd = {
-      id: Math.random().toString(36),
       boardId: board._id,
       title: newColumnTitle.trim(),
-      cardOrder: [],
-      cards: [],
     };
-    let newColumns = [...columns, newColumnToAdd];
-    let newBoard = { ...board };
-    newBoard.columnOrder = newColumns.map((c) => c._id);
-    newBoard.column = newColumns;
+    createNewColumn(newColumnToAdd).then((column) => {
+      let newColumns = [...columns, column];
+      let newBoard = { ...board };
+      newBoard.columnOrder = newColumns.map((c) => c._id);
+      newBoard.column = newColumns;
 
-    setColumns(newColumns);
-    setBoard(newBoard);
-    setNewColumnTitle("");
+      setColumns(newColumns);
+      setBoard(newBoard);
+      setNewColumnTitle("");
+    });
   };
-  const onUpdateColumn = (newColumnToUpdate) => {
+  const onUpdateColumnState = (newColumnToUpdate) => {
+    const columnIdToUpdate = newColumnToUpdate._id;
     let newColumns = [...columns];
     const columnIndexToUpdate = newColumns.findIndex(
-      (i) => i._id === newColumnToUpdate._id
+      (i) => i._id === columnIdToUpdate
     );
     if (newColumnToUpdate._destroy) {
-      // remove column
       newColumns.splice(columnIndexToUpdate, 1);
     } else {
-      // update column info
       newColumns.splice(columnIndexToUpdate, 1, newColumnToUpdate);
     }
     let newBoard = { ...board };
@@ -106,7 +104,6 @@ const BoardContent = () => {
     setColumns(newColumns);
     setBoard(newBoard);
   };
-
   return (
     <div className="board-content">
       <Container
@@ -125,7 +122,7 @@ const BoardContent = () => {
             <Column
               column={column}
               onCardDrop={onCardDrop}
-              onUpdateColumn={onUpdateColumn}
+              onUpdateColumnState={onUpdateColumnState}
             />
           </Draggable>
         ))}
@@ -156,7 +153,7 @@ const BoardContent = () => {
         ) : (
           <div className="add-new-column" onClick={toggleOpenNewColumnForm}>
             <BiPlus />
-            Add another card
+            Add another column
           </div>
         )}
       </BootstrapContainer>

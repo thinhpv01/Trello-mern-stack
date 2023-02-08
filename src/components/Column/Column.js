@@ -1,3 +1,4 @@
+import { createNewCard, updateColumn } from "actions/apiCall";
 import Card from "components/Card/Card";
 import ConfirmModal from "components/Common/ConfirmModal";
 import { cloneDeep } from "lodash";
@@ -12,7 +13,7 @@ import {
 } from "utilities/ContentEditable";
 import { mapOrder } from "utilities/sorts";
 import "./Column.scss";
-const Column = ({ column, onCardDrop, onUpdateColumn }) => {
+const Column = ({ column, onCardDrop, onUpdateColumnState }) => {
   const cards = mapOrder(column.cards, column.cardOrder, "_id");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const toggleShowConfirmModal = () => setShowConfirmModal(!showConfirmModal);
@@ -21,16 +22,15 @@ const Column = ({ column, onCardDrop, onUpdateColumn }) => {
   const [newCardTitle, setNewCardTitle] = useState("");
   const newCardTextAreaRef = useRef(null);
 
+  // Remove column
   const onConfirmModalAction = (type) => {
-    console.log(type);
     if (type === MODAL_ACTION_CONFIRM) {
-      const newColumn = {
-        ...column,
-        _destroy: true,
-      };
-      onUpdateColumn(newColumn);
+      const newColumn = { ...column, _destroy: true };
+      updateColumn(newColumn._id, newColumn).then((updatedColumn) => {
+        onUpdateColumnState(updatedColumn);
+      });
     }
-    setShowConfirmModal(false);
+    toggleShowConfirmModal();
   };
   const handleColumnTitleChange = (e) => setColumnTitle(e.target.value);
   const toggleOpenNewCardForm = () => {
@@ -46,11 +46,16 @@ const Column = ({ column, onCardDrop, onUpdateColumn }) => {
     }
   }, [openNewCardForm]);
   const handleColumnBlur = () => {
-    const newColumn = {
-      ...column,
-      title: columnTitle,
-    };
-    onUpdateColumn(newColumn);
+    if (columnTitle !== column.title) {
+      const newColumn = {
+        ...column,
+        title: columnTitle,
+      };
+      updateColumn(newColumn._id, newColumn).then((updatedColumn) => {
+        updatedColumn.cards = newColumn.cards;
+        onUpdateColumnState(updatedColumn);
+      });
+    }
   };
   const onNewCardTitleChange = (e) => setNewCardTitle(e.target.value);
   const addNewCard = () => {
@@ -59,18 +64,18 @@ const Column = ({ column, onCardDrop, onUpdateColumn }) => {
       return;
     }
     const newCardToAdd = {
-      id: Math.random().toString(36),
       boardId: column.boardId,
       columnId: column._id,
       title: newCardTitle.trim(),
-      cover: null,
     };
-    let newColumn = cloneDeep(column);
-    newColumn.cards.push(newCardToAdd);
-    newColumn.cardOrder.push(newCardToAdd._id);
-    onUpdateColumn(newColumn);
-    setNewCardTitle("");
-    toggleOpenNewCardForm();
+    createNewCard(newCardToAdd).then((card) => {
+      let newColumn = cloneDeep(column);
+      newColumn.cards.push(card);
+      newColumn.cardOrder.push(newCardToAdd._id);
+      onUpdateColumnState(newColumn);
+      setNewCardTitle("");
+      toggleOpenNewCardForm();
+    });
   };
   return (
     <div className="column">
