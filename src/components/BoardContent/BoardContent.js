@@ -1,6 +1,12 @@
-import { createNewColumn, fetchBoardDetails } from "actions/apiCall";
+import {
+  createNewColumn,
+  fetchBoardDetails,
+  updateBoard,
+  updateCard,
+  updateColumn,
+} from "actions/apiCall";
 import Column from "components/Column/Column";
-import { isEmpty } from "lodash";
+import { isEmpty, cloneDeep } from "lodash";
 import { useEffect, useRef, useState } from "react";
 import {
   Button,
@@ -45,14 +51,18 @@ const BoardContent = () => {
   }
 
   const onColumnDrop = (dropResult) => {
-    console.log(dropResult);
-    let newColumns = [...columns];
+    let newColumns = cloneDeep(columns);
     newColumns = applyDrag(newColumns, dropResult);
     let newBoard = { ...board };
     newBoard.columnOrder = newColumns.map((c) => c._id);
     newBoard.columns = newColumns;
     setColumns(newColumns);
     setBoard(newBoard);
+    updateBoard(newBoard._id, newBoard).catch((error) => {
+      console.log(error);
+      setColumns(columns);
+      setBoard(board);
+    });
   };
 
   const onCardDrop = (columnId, dropResult) => {
@@ -62,6 +72,20 @@ const BoardContent = () => {
       currentColumn.cards = applyDrag(currentColumn.cards, dropResult);
       currentColumn.cardOrder = currentColumn.cards.map((i) => i._id);
       setColumns(newColumns);
+      if (dropResult.removedIndex !== null && dropResult.addedIndex !== null) {
+        updateColumn(currentColumn._id, currentColumn).catch(() => {
+          setColumns(columns);
+        });
+      } else {
+        updateColumn(currentColumn._id, currentColumn).catch(() => {
+          setColumns(columns);
+        });
+        if (dropResult.addedIndex !== null) {
+          let currentCard = cloneDeep(dropResult.payload);
+          currentCard.columnId = currentColumn._id;
+          updateCard(currentCard._id, currentCard);
+        }
+      }
     }
   };
 
