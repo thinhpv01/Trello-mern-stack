@@ -3,6 +3,10 @@ import BoardBar from "components/BoardBar/BoardBar";
 import BoardContent from "components/BoardContent/BoardContent";
 import "./App.scss";
 function App() {
+  const text = "Xin lỗi!";
+  for (let i = 0; i <= 1001; i++) {
+    console.log(text);
+  }
   return (
     <div className="trello">
       <AppBar />

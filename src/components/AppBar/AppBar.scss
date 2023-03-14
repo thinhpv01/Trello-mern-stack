@@ -1,11 +1,21 @@
 @import '_setting.scss';
-$app-bar-bg-color: #0067a3;
+$app-bar-bg-color: #000;
 
-.navbar-app {
-    height: $navbar-app-height;
-    padding-left: $gap;
-    display: flex;
-    align-items: center;
-    background-color: $app-bar-bg-color;
-    font-size: 1.5rem;
+.nav {
+    &-app{
+        padding-left: $gap;
+        display: flex;
+        align-items: center;
+        background-color: $app-bar-bg-color;
+        color: #fff;
+    }
+    &-left{
+        display: flex;
+        align-items: center;
+    }
+    &-link{
+        margin: 0 16px;
+    }
+    &-icon{ 
+    }
 }
